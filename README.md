@@ -1,11 +1,9 @@
-cerlc
-=====
+# cerlc
 
-Native Erlang CRC Algorithms
+## A Library of Native Erlang CRC Algorithms
 
-An OTP library
+## Build
 
-Build
------
-
+```
     $ rebar3 compile
+```
