@@ -12,6 +12,8 @@
 
 -compile(native).
 
+-compile({inline,[table/0]}).
+
 -export([crc/1, crc/2, table/0]).
 
 -spec crc(binary() | [byte()]) -> byte().
