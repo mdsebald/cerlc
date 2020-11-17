@@ -14,7 +14,7 @@
 
 -compile({inline,[table/0]}).
 
--export([crc/1, crc/2, table/0]).
+-export([crc/1, crc/2]).
 
 -spec crc(binary() | [byte()]) -> byte().
 crc(Data) when is_binary(Data) ->
