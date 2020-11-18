@@ -40,7 +40,7 @@
 ### A Word on Performance
 
 ### Sources of Truth
-    [CRC Calculator (Javascript)](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
+    [CRC Calculator](Javascript)](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
     [crccalc.com](https://crccalc.com/)
 
 ### Don't see the CRC algorithm you need?
