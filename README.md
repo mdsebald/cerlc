@@ -38,6 +38,7 @@
 ```
 
 ### A Word on Performance
+    TODO
 
 ### Sources of Truth
 [Javascript CRC Calculator](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
