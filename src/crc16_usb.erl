@@ -1,14 +1,14 @@
 %%
-%% Implement CRC-16/MODBUS
+%% Implement CRC-16/USB
 %%
 %% Input reflected: yes
 %% Result reflected: yes
 %% Polynomial:, 0 x8005
 %% Initial Value:, 0 xFFFF
-%% Final Xor Value:, 0 x0
+%% Final Xor Value:, 0 xFFFF
 %%
 
--module(crc16_modbus).
+-module(crc16_usb).
 
 -compile(native).
 
@@ -32,7 +32,7 @@ crc(Crc, [X | Rem]) ->
   NextCrc = ((Crc bsr 8) bxor element(Index, table())) band 16#FFFF,
   crc(NextCrc, Rem);
 
-crc(Crc, []) -> Crc.
+crc(Crc, []) -> (Crc bxor 16#FFFF).
 
 % Use reflected lookup table
 -spec table() -> tuple().
@@ -80,15 +80,15 @@ table() ->
 -include_lib("eunit/include/eunit.hrl").
 
 empty_list_test() ->
-  ?assert(crc("") == 16#FFFF).
+  ?assert(crc("") == 0).
 
 empty_bin_test() ->
-  ?assert(crc(<<>>) == 16#FFFF).
+  ?assert(crc(<<>>) == 0).
 
 std_list_test() ->
-  ?assert(crc("123456789") == 16#4B37).
+  ?assert(crc("123456789") == 16#B4C8).
 
 bin_with_crc_test() ->
-  ?assert(crc(<<16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#37,16#4B>>) == 0).
+  ?assert(crc(<<16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#C8,16#B4>>) == crc(<<0,0>>)).
 
 -endif.
