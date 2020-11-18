@@ -41,6 +41,7 @@
 
 ### Sources of Truth
 [Javascript CRC Calculator](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
+
 [crccalc](https://crccalc.com/)
 
 ### Don't see the CRC algorithm you need?
