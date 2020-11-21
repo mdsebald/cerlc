@@ -39,8 +39,7 @@
 
 ### A Word on Performance
 
-There are too many variables to definitively declare one implementation method is always faster than another in all environments.  
-However, in benchmarking various CRC implementations, I have found in general, the performance rank of various CRC implementation methods, from fastest to slowest is as follows:
+There are too many variables to definitively declare one implementation method is always faster than another in all environments. However, in benchmarking various CRC implementations, I have found in general, the performance rank of various CRC implementation methods, from fastest to slowest is as follows:
 
 1. Erlang Built In Function (BIF) (Only CRC-32 algorithm available)
 2. Erlang/Elixir with Natively Implemented Functions in 'C' (NIF's)
@@ -50,29 +49,29 @@ However, in benchmarking various CRC implementations, I have found in general, t
     1. HiPE is not available in OTP-24 and later
 5. Native Erlang/Elixir without HiPE or JIT compilation
 
-Below is one benchmark comparing various CRC implementations.  For comparison purposes only.  Your environment may produce different results.
-
 #### Benchmarking Various CRC implementations
+
+For comparison purposes only.  Your environment may produce different results.
 
 [Crc Benchmark Source](https://github.com/mdsebald/CrcBenchmarks)
 
-Benchmark Environment:
+##### Benchmark Environment:
 
 OS: WSL2, Ubuntu 18.04, on 64 bit Windows 10 Processor: Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz, 2501 Mhz, 2 Core(s), 4 Logical Processor(s) 8 GB Ram
 
-Benchmark CRC routines:
+##### Benchmark CRC routines:
   1. Erlang BIF crc32()
   2. Erlang implementation for CRC32-C using NIF's
   3. Elixir configurable CRC-32 implemented using NIF's
   4. Native Erlang CRC-32 (cerlc library)
   5. Native Erlang CRC-32/C (cerlc library)
 
-Benchmark run 3 times, using a 100 bytes of random data each time
+##### Benchmark run 3 times, using a 100 bytes of random data each time
   1. OTP-23 with HiPE enabled
   2. OTP-24 uses JIT compiler
   3. OTP-23 without HiPE enabled
 
-OTP-23 with HiPE
+##### OTP-23 with HiPE
 ```
 iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
 *** &:erlang.crc32/1 ***
@@ -91,7 +90,7 @@ iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
 1.0 sec     1M iterations   1.0 μs/op
 ```
 
-OTP-24 with JIT compilation
+##### OTP-24 with JIT compilation
 ```
 iex(6)> CrcBenchmarks.run_benchmark_crc32(100)
 *** &:erlang.crc32/1 ***
@@ -110,7 +109,7 @@ iex(6)> CrcBenchmarks.run_benchmark_crc32(100)
 1.8 sec     1M iterations   1.76 μs/op
 ```
 
-OTP-23 without HiPE
+##### OTP-23 without HiPE
 ```
 iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
 *** &:erlang.crc32/1 ***
