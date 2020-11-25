@@ -1,5 +1,5 @@
 {application, cerlc,
- [{description, "An OTP library"},
+ [{description, "A Native Erlang Library of CRC Algorithms"},
   {vsn, "0.1.0"},
   {registered, []},
   {applications,
