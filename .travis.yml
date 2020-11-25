@@ -1,5 +1,0 @@
-language: erlang
-otp_release:
-  - 23.0.1
-
-script: "./rebar3 do dialyzer, eunit"

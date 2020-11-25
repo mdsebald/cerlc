@@ -2,7 +2,6 @@
 
 ## A Native Erlang Library of CRC Algorithms
 
-[![Build Status](https://travis-ci.org/mdsebald/cerlc.svg?branch=main)](https://travis-ci.org/mdsebald/cerlc)
 ![Build Status](https://github.com/mdsebald/cerlc/workflows/.github/workflows/erlang.yml/badge.svg)
 
 ### Goals
