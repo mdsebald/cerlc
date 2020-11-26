@@ -2,11 +2,10 @@
 
 ## A Native Erlang Library of CRC Algorithms
  
-![Erlang CI](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)
+[![Erlang CI](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)](https://github.com/mdsebald/cerlc/actions)
 
 ### Goals
     - Implemented in native Erlang. No NIFs or other depenencies required.
-    - Efficient.
     - One algorithm per module.
 
 ### Current Algorithms and Associated Modules
