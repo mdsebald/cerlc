@@ -2,7 +2,7 @@
 
 ## A Native Erlang Library of CRC Algorithms
 
-![Build Status](https://github.com/mdsebald/cerlc/workflows/.github/workflows/erlang.yml/badge.svg)
+![Build Status](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)
 
 ### Goals
     - Implemented in native Erlang. No NIFs or other depenencies required.
