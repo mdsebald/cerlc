@@ -2,7 +2,7 @@
 
 ## A Native Erlang Library of CRC Algorithms
  
-![Build Status](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)
+![Erlang CI](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)
 
 ### Goals
     - Implemented in native Erlang. No NIFs or other depenencies required.
@@ -34,7 +34,7 @@
 
 % Add to list of dependencies in rebar.config
 {deps, [
-    {cerlc, "~> 0.1.0"}
+    {cerlc, "0.1.0"}
 ]}.
 
 % Code
