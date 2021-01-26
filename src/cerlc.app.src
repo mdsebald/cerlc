@@ -1,6 +1,6 @@
 {application, cerlc,
  [{description, "A Native Erlang Library of CRC Algorithms"},
-  {vsn, "0.1.0"},
+  {vsn, "0.2.0"},
   {registered, []},
   {applications,
    [kernel,
@@ -10,5 +10,10 @@
   {modules, []},
 
   {licenses, ["Apache 2.0"]},
-  {links, [{"GitHub", "https://github.com/mdsebald/cerlc"}]}
+  {links, [{"GitHub", "https://github.com/mdsebald/cerlc"}]},
+  {files, ["src",
+           "test",
+           "rebar.config",
+           "README.md",
+           "LICENSE"]}
  ]}.
