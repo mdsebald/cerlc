@@ -1,6 +1,6 @@
 -module(gen_cerlc).
 
-% Pretend these functions exist already to suppress compiler errors
+% Pretend the cerlc module and functions exist already, to suppress compiler errors
 % They won't actually be created, until gen_module() is executed
 -import(cerlc, [crc/1, crc/2]).
 
@@ -10,55 +10,75 @@
 -on_load(gen_module/0).
 
 gen_module() ->
-  {Bits, Table, InitValue, FinalXorValue, Reflected} = ct_expand:term(gen_table()),
-  Mask = bits_to_mask(Bits),
-  % TODO: Break the reflected and unreflected cases into separate functions
-  %   Create special case functions for reflected and un-reflected 8 bit
-  %   Need to make module and function names configurable
-  %   Allow creation of multiple different crc functions?
-  M = case Reflected of
-    true ->
-      codegen:gen_module(
-        cerlc, 
-        [{crc,1}, {crc,2}],
-        [
-          {crc, 
-          fun
-            (Data) -> crc({'$var', InitValue}, Data)
-          end},
-          {crc, 
-          fun
-            (Crc, []) -> Crc bxor {'$var', FinalXorValue};
-            (Crc, [X | Rem]) ->
-              % table() tuple is indexed from 1, not 0
-              Index = ((Crc bxor X) band 16#FF) + 1,
-              NextCrc = ((Crc bsr 8) bxor element(Index, {'$var', Table})) band {'$var', Mask},
-              crc(NextCrc, Rem)
-          end}
-        ]);
-    false ->
-      codegen:gen_module(
-        cerlc, 
-        [{crc,1}, {crc,2}],
-        [
-          {crc, 
-          fun
-            (Data) -> crc({'$var', InitValue}, Data)
-          end},
-          {crc, 
-          fun
-            (Crc, []) -> Crc bxor {'$var', FinalXorValue};
-            (Crc, [X | Rem]) ->
-              % table() tuple is indexed from 1, not 0
-              Index = ((Crc bsr 8) bxor X) + 1,
-              NextCrc = ((Crc bsl 8) bxor element(Index, {'$var', Table})) band {'$var', Mask},
-              crc(NextCrc, Rem)
-          end}
-        ])
-  end,
-  merl:compile_and_load(M),
+  M = gen_crc_fun(ct_expand:term(gen_table())),
+  merl:compile_and_load(M, [native]),
   % must return ok, for -on_load() directive to succeed
   ok.
+
+gen_crc_fun({8, Table, InitValue, FinalXorValue, _Reflected}) ->
+  codegen:gen_module(
+    cerlc, 
+    [{crc,1}, {crc,2}],
+    [
+      {crc, 
+      fun
+        (Data) -> crc({'$var', InitValue}, Data)
+      end},
+      {crc, 
+      fun
+        (Crc, [X | Rem]) ->
+          % table() tuple is indexed from 1, not 0
+          Index = (Crc bxor X) + 1,
+          NextCrc = element(Index, {'$var', Table}),
+          crc(NextCrc, Rem);
+        (Crc, []) -> Crc bxor {'$var', FinalXorValue}
+      end}
+    ]
+  );
+
+gen_crc_fun({Bits, Table, InitValue, FinalXorValue, false}) ->
+  Mask = bits_to_mask(Bits),
+  codegen:gen_module(
+    cerlc, 
+    [{crc,1}, {crc,2}],
+    [
+      {crc, 
+      fun
+        (Data) -> crc({'$var', InitValue}, Data)
+      end},
+      {crc, 
+      fun
+        (Crc, [X | Rem]) ->
+          % table() tuple is indexed from 1, not 0
+          Index = ((Crc bsr 8) bxor X) + 1,
+          NextCrc = ((Crc bsl 8) bxor element(Index, {'$var', Table})) band {'$var', Mask},
+          crc(NextCrc, Rem);
+        (Crc, []) -> Crc bxor {'$var', FinalXorValue}
+      end}
+    ]
+  );
+
+gen_crc_fun({Bits, Table, InitValue, FinalXorValue, true}) ->
+  Mask = bits_to_mask(Bits),
+  codegen:gen_module(
+    cerlc, 
+    [{crc,1}, {crc,2}],
+    [
+      {crc, 
+      fun
+        (Data) -> crc({'$var', InitValue}, Data)
+      end},
+      {crc, 
+      fun
+        (Crc, [X | Rem]) ->
+          % table() tuple is indexed from 1, not 0
+          Index = ((Crc bxor X) band 16#FF) + 1,
+          NextCrc = ((Crc bsr 8) bxor element(Index, {'$var', Table})) band {'$var', Mask},
+          crc(NextCrc, Rem);
+        (Crc, []) -> Crc bxor {'$var', FinalXorValue}
+      end}
+    ]
+  ).
 
 %%
 %% Generate CRC lookup table
