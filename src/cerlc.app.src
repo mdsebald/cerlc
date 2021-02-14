@@ -1,5 +1,5 @@
 {application, cerlc,
- [{description, "A Native Erlang Library of CRC Algorithms"},
+ [{description, "A Native Erlang Configurable CRC function generator"},
   {vsn, "0.2.0"},
   {registered, []},
   {applications,

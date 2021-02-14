@@ -1,7 +1,7 @@
 -module(cerlc).
 
 %%
-%% Generate custom configured, Cyclic Redundancy Check (CRC) calculation functions
+%% Generate a custom configured, Cyclic Redundancy Check (CRC) calculation function
 %%
 
 -export([init/1, calc_crc/2]).
@@ -12,6 +12,29 @@
   init_value :: non_neg_integer(), 
   final_xor_value :: non_neg_integer()
 }).
+
+
+%%
+%% init/1 Returns a record containing the CRC calculation function
+%% and associated configuration values
+%%
+%% Examples
+%%  % Use a preconfigured CRC algorithm
+%%  Crc16Defn = Cexc.init(:crc16_aug_ccitt)
+%%
+%%  % Generate a CRC for a list of bytes
+%%  16#E5CC = cerlc:calc_crc("123456789", Crc16Defn)
+%%
+%%  %Check that a list of bytes has been received without errors
+%%  cerlc:calc_crc([16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#E5,16#CC], Crc16Defn) == 0
+%%
+%%  % manually specify CRC algorithm parameters
+%%  % use the form: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
+%%  CustomCrc = cerlc:init({16, 0x1234, 0, 0, true})
+%%
+%%   16#F13 = Cexc.calc_crc('123456789', custom_crc)
+%%   cerlc:calc_crc([16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#13,16#0F], CustomCrc) == 0
+%%
 
 -spec init(atom() | tuple()) -> crc_defn.
 init(CrcDef) when is_atom(CrcDef) ->
