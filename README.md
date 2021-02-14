@@ -33,7 +33,7 @@
 ]}.
 
 % Example Code
-CrcDefn = cerlc:init(:crc16_aug_ccitt),
+CrcDefn = cerlc:init(crc16_aug_ccitt),
 
 % Data may be a binary or list of bytes
 Crc = cerlc:calc_crc(Data, CrcDefn)
@@ -53,7 +53,7 @@ end
 # Example Code
 crc_defn = :cerlc.init(:crc32_c)
 
-# data may be a binary of list of bytes
+# data may be a binary or list of bytes
 crc = :cerlc.calc_crc(data, crc_defn)
 
 ```
