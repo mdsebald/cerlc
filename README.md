@@ -32,11 +32,18 @@
     {cerlc, "0.2.0"}
 ]}.
 
-% Example Code
+% Example: Predefined CRC Algorithm
 CrcDefn = cerlc:init(crc16_aug_ccitt),
 
 % Data may be a binary or list of bytes
 Crc = cerlc:calc_crc(Data, CrcDefn)
+
+% Example: Custom CRC Algorithm
+% Custom CRC parameters: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
+CustomDefn = cerlc:init({8, 16#1234, 0, 16#FF, false}),
+
+% Data may be a binary or list of bytes
+Crc = cerlc:calc_crc(Data, CustomDefn)
 
 ```
 
@@ -50,19 +57,25 @@ def deps do
   ]
 end
 
-# Example Code
+# Example: Predefined CRC Algorithm
 crc_defn = :cerlc.init(:crc32_c)
 
 # data may be a binary or list of bytes
 crc = :cerlc.calc_crc(data, crc_defn)
 
+# Example: Custom CRC Algorithm
+# Custom CRC parameters: {bits, polynomial, init_value, final_xor_value, reflected}
+custom_defn = cerlc:init({8, 0x1234, 0, 0xFF, false}),
+
+# Data may be a binary or list of bytes
+crc = :cerlc.calc_crc(data, custom_defn)
+
 ```
 
-### A Word on Performance
+### Performance
 
-cerlc is much slower than Erlang's built in crc32() function and CRC's implemented using 'C' language NIF's. 
-cerlc is useful for quickly generating CRC's with little code and no other dependencies, 
-and the CRC calculation is not in a critical path.
+cerlc is slower than Erlang's built in crc32() function and CRC's implemented using 'C' language NIF's. 
+cerlc is useful for quickly generating CRC's with little code and no other dependencies, and not when CRC calculations are in a critical path.
 
 ### Sources of CRC Definitions
 [Javascript CRC Calculator](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
