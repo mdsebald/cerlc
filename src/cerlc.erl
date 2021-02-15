@@ -4,15 +4,14 @@
 %% Generate a custom configured, Cyclic Redundancy Check (CRC) calculation function
 %%
 
+-compile(native).
+
 -export([init/1, calc_crc/2]).
 
 -record(cerlc, {
-  bits :: 8 | 16 | 32 | 64, 
-  reducer :: function(), 
   init_value :: non_neg_integer(), 
-  final_xor_value :: non_neg_integer()
+  crc_fun :: function()
 }).
-
 
 %%
 %% init/1 Returns a record containing the CRC calculation function
@@ -20,7 +19,7 @@
 %%
 %% Examples
 %%  % Use a preconfigured CRC algorithm
-%%  Crc16Defn = Cexc.init(:crc16_aug_ccitt)
+%%  Crc16Defn = cerlc.init(:crc16_aug_ccitt)
 %%
 %%  % Generate a CRC for a list of bytes
 %%  16#E5CC = cerlc:calc_crc("123456789", Crc16Defn)
@@ -32,8 +31,8 @@
 %%  % use the form: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
 %%  CustomCrc = cerlc:init({16, 0x1234, 0, 0, true})
 %%
-%%   16#F13 = Cexc.calc_crc('123456789', custom_crc)
-%%   cerlc:calc_crc([16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#13,16#0F], CustomCrc) == 0
+%%  16#F13 = Cexc.calc_crc('123456789', custom_crc)
+%%  cerlc:calc_crc([16#31,16#32,16#33,16#34,16#35,16#36,16#37,16#38,16#39,16#13,16#0F], CustomCrc) == 0
 %%
 
 -spec init(atom() | tuple()) -> crc_defn.
@@ -46,14 +45,15 @@ init({8, Polynomial, InitValue, FinalXorValue, Reflected}) ->
   Table = gen_table(8, Polynomial, Reflected),
 
   #cerlc{
-    bits = 8,
     init_value = InitValue,
-    final_xor_value = FinalXorValue,
-    reducer = fun (CurByte, CurCrc) ->
-      % Table tuple is indexed from 1, not 0
-      Index = (CurCrc bxor CurByte) + 1,
-      element(Index, Table)
-    end
+    crc_fun = fun Crc([CurByte | Rem], CurCrc) ->
+    % Table tuple is indexed from 1, not 0
+    Index = (CurCrc bxor CurByte) + 1,
+    NextCrc = element(Index, Table),
+    Crc(Rem, NextCrc);
+
+    Crc([], CurCrc) -> CurCrc bxor FinalXorValue
+  end
   };
 
 % Generate 16, 32, or 64-bit CRC function for un-reflected case
@@ -63,13 +63,14 @@ init({Bits, Polynomial, InitValue, FinalXorValue, false}) ->
   Mask = bits_to_mask(Bits),
 
    #cerlc{
-    bits = Bits,
     init_value = InitValue,
-    final_xor_value = FinalXorValue,
-    reducer = fun (CurByte, CurCrc) ->
+    crc_fun = fun Crc([CurByte | Rem], CurCrc) ->
       % Table tuple is indexed from 1, not 0
       Index = (((CurCrc bsr Shift) bxor CurByte) band 16#FF) + 1,
-      ((CurCrc bsl 8) bxor element(Index, Table)) band Mask
+      NextCrc = ((CurCrc bsl 8) bxor element(Index, Table)) band Mask,
+      Crc(Rem, NextCrc);
+
+      Crc([], CurCrc) -> CurCrc bxor FinalXorValue
     end
   };
 
@@ -79,13 +80,14 @@ init({Bits, Polynomial, InitValue, FinalXorValue, true}) ->
   Mask = bits_to_mask(Bits),
   
   #cerlc{
-    bits = Bits,
     init_value = InitValue,
-    final_xor_value = FinalXorValue,
-    reducer = fun (CurByte, CurCrc) ->
+    crc_fun = fun Crc([CurByte | Rem], CurCrc) ->
       % Table tuple is indexed from 1, not 0
       Index = ((CurCrc bxor CurByte) band 16#FF) + 1,
-      ((CurCrc bsr 8) bxor element(Index, Table)) band Mask
+      NextCrc = ((CurCrc bsr 8) bxor element(Index, Table)) band Mask,
+      Crc(Rem, NextCrc);
+
+      Crc([], CurCrc) -> CurCrc bxor FinalXorValue
     end
   }.
 
@@ -94,10 +96,10 @@ init({Bits, Polynomial, InitValue, FinalXorValue, true}) ->
 %%
 -spec calc_crc(binary() | list(), #cerlc{}) -> non_neg_integer().
 calc_crc(Data, Info) when is_binary(Data) ->
-    calc_crc(binary_to_list(Data), Info);
+  calc_crc(binary_to_list(Data), Info);
 
 calc_crc(Data, Info) when is_list(Data) ->
-    lists:foldl(Info#cerlc.reducer, Info#cerlc.init_value, Data) bxor Info#cerlc.final_xor_value.
+  (Info#cerlc.crc_fun)(Data, Info#cerlc.init_value).
 
 % Generate CRC look-up table for un-reflected and reflected cases
 gen_table(Bits, Polynomial, false) -> 
