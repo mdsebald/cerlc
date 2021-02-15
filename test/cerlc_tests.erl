@@ -2,9 +2,11 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-define(CRC_DEFN, cerlc:init(crc8)).
+
 f8_bit_un_reflected_generate_CRC_test() ->
-  CrcDefn = cerlc:init(crc8),
-  ?assert(cerlc:calc_crc("123456789", CrcDefn) == 16#F4).
+  %CrcDefn = cerlc:init(crc8),
+  ?assert(cerlc:calc_crc("123456789", ?CRC_DEFN) == 16#F4).
 
 f8_bit_reflected_generate_CRC_test() ->
   CrcDefn = cerlc:init(crc8_rohc),
