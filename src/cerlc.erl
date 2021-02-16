@@ -45,15 +45,28 @@
 init(CrcDef) when is_atom(CrcDef) ->
   init(name_to_config(CrcDef));
 
-% Generate 8-bit CRC function.
-% Function is same for normal and reflected cases
-init({8, Polynomial, InitValue, FinalXorValue, Reflected}) ->
+% Generate 8-bit CRC function for un-reflected case
+init({8, Polynomial, InitValue, FinalXorValue, false}) ->
 
   #cerlc{
     init_value = InitValue,
     final_xor_value = FinalXorValue,
+    % 8 bit CRC function is same for normal and reflected cases
     crc_fun = fun cerlc:crc8_fun/3,
-    table = gen_table(8, Polynomial, Reflected),
+    table = gen_table(8, Polynomial, false),
+    shift = 0,
+    mask = 0
+  };
+
+% Generate 8-bit CRC function for reflected case
+init({8, Polynomial, InitValue, FinalXorValue, true}) ->
+
+  #cerlc{
+    init_value = reflect(8, InitValue),
+    final_xor_value = FinalXorValue,
+    % 8 bit CRC function is same for normal and reflected cases
+    crc_fun = fun cerlc:crc8_fun/3,
+    table = gen_table(8, Polynomial, true),
     shift = 0,
     mask = 0
   };
@@ -74,7 +87,7 @@ init({Bits, Polynomial, InitValue, FinalXorValue, false}) ->
 init({Bits, Polynomial, InitValue, FinalXorValue, true}) ->
 
   #cerlc{
-    init_value = InitValue,
+    init_value = reflect(Bits, InitValue),
     final_xor_value = FinalXorValue,
     crc_fun = fun cerlc:crc16_32_64_r_fun/3,
     table = gen_table(Bits, Polynomial, true),
@@ -113,7 +126,7 @@ crc16_32_64_r_fun([], CurCrc, Info) -> CurCrc bxor Info#cerlc.final_xor_value.
 calc_crc(Data, Info) when is_binary(Data) ->
   calc_crc(binary_to_list(Data), Info);
 
-calc_crc(Data, Info) when is_list(Data) ->
+calc_crc(Data, Info) when is_list(Data) -> 
   (Info#cerlc.crc_fun)(Data, Info#cerlc.init_value, Info).
 
 % Generate CRC look-up table for un-reflected and reflected cases
