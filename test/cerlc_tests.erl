@@ -65,6 +65,10 @@ crc32_r_custom_config_test() -> crc_test_common({32, 16#12345678, 16#9ABCDEF0, 1
 crc64_custom_config_test() -> crc_test_common({64, 16#123456789ABCDEF0, 16#123456789ABCDEF0, 16#123456789ABCDEF0, false}, 16#980704F6123B6210).
 crc64_r_custom_config_test() -> crc_test_common({64, 16#123456789ABCDEF0, 16#123456789ABCDEF0, 16#123456789ABCDEF0, true}, 16#1B851603B23D082C).
 
+% Test passing binary data into CRC calculation
+crc8_sensirion_bin_test() -> crc_test_common(crc8_sensirion, 16#92, <<16#BE, 16#EF>>).
+
+
 crc_test_common(CrcConfig, ExpectedCrc) ->
   crc_test_common(CrcConfig, ExpectedCrc, "123456789").
 
