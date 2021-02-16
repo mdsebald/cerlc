@@ -36,6 +36,7 @@
 % Example: Using a predefined CRC algorithm
 CrcDefn = cerlc:init(crc16_aug_ccitt),
 
+% Data may be a binary or list of bytes
 Crc = cerlc:calc_crc(Data, CrcDefn)
 
 
@@ -49,8 +50,8 @@ Crc = cerlc:calc_crc(Data, CustomDefn)
 % Example: Using a macro to evaluate init() function at compile time
 -define(CRC_DEFN, cerlc:init(crc16_aug_ccitt)).
 
-% Data may be a binary or list of bytes
 Crc = cerlc:calc_crc(Data, ?CRC_DEFN),
+
 
 ```
 
@@ -68,6 +69,7 @@ end
 # Example: Using a predefined CRC algorithm
 crc8_defn = :cerlc.init(:crc8)
 
+# Data may be a binary or list of bytes
 crc = :cerlc.calc_crc(data, crc8_defn)
 
 
@@ -82,6 +84,7 @@ crc = :cerlc.calc_crc(data, custom_defn)
 @crc32_defn :cerlc.init(:crc32_c)
 
 crc = :cerlc.calc_crc(data, @crc32_defn)
+
 
 ```
 
