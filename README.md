@@ -1,20 +1,16 @@
 # cerlc
 
-## A Native Erlang Library of CRC Algorithms
+## A Custom Configurable Cyclic Redundancy Check (CRC), Function Generator
  
 [![Erlang CI](https://github.com/mdsebald/cerlc/workflows/Erlang%20CI/badge.svg)](https://github.com/mdsebald/cerlc/actions)
 
-### Goals
-    - Implemented in native Erlang. No NIFs or other depenencies required.
-    - One algorithm per module.
+### Implemented in native Erlang. No NIFs or depenencies required.
 
-### Current Algorithms and Associated Modules
-    - CRC-8             crc8.erl
-    - CRC-16/AUG-CCITT  crc16_aug_ccitt.erl
-    - CRC-16/MODBUS     crc16_modbus.erl
-    - CRC-16/USB        crc16_usb.erl
-    - CRC-32            crc32.erl
-    - CRC-32/C          crc32_c.erl
+#### Select from over 50 predefined CRC algorithms.  
+    See src/cerlc.erl for complete list
+
+#### OR Generate custom CRC algorithms by manually specifying the parameters. 
+    bit width, polynomial, initial value, final XOR value, and data reflected or not 
 
 ### Build
 ```
@@ -33,11 +29,30 @@
 
 % Add to list of dependencies in rebar.config
 {deps, [
-    {cerlc, "0.1.0"}
+    {cerlc, "0.2.0"}
 ]}.
 
-% Code
-CrcValue = crc16_aug_ccitt:crc(Data),
+
+% Example: Using a predefined CRC algorithm
+CrcDefn = cerlc:init(crc16_aug_ccitt),
+
+% Data may be a binary or list of bytes
+Crc = cerlc:calc_crc(Data, CrcDefn)
+
+
+% Example: Creating a custom CRC algorithm
+% Custom CRC parameters: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
+CustomDefn = cerlc:init({8, 16#1234, 0, 16#FF, false}),
+
+Crc = cerlc:calc_crc(Data, CustomDefn)
+
+
+% Example: Using a macro to evaluate init() function at compile time
+-define(CRC_DEFN, cerlc:init(crc16_aug_ccitt)).
+
+Crc = cerlc:calc_crc(Data, ?CRC_DEFN),
+
+
 ```
 
 #### In an Elixir application
@@ -46,177 +61,40 @@ CrcValue = crc16_aug_ccitt:crc(Data),
 # Add to list of dependencies in mix.exs
 def deps do
   [
-    {:cerlc, "~> 0.1.0"}
+    {:cerlc, "~> 0.2.0"}
   ]
 end
 
-# Code
-crc_value = :crc16_aug_ccitt.crc(data)
+
+# Example: Using a predefined CRC algorithm
+crc8_defn = :cerlc.init(:crc8)
+
+# Data may be a binary or list of bytes
+crc = :cerlc.calc_crc(data, crc8_defn)
+
+
+# Example: Creating a custom CRC algorithm
+# Custom CRC parameters: {bits, polynomial, init_value, final_xor_value, reflected}
+custom_defn = cerlc:init({8, 0x1234, 0, 0xFF, false}),
+
+crc = :cerlc.calc_crc(data, custom_defn)
+
+
+# Example: Using a module attribute to evaluate init() function at compile time
+@crc32_defn :cerlc.init(:crc32_c)
+
+crc = :cerlc.calc_crc(data, @crc32_defn)
+
+
 ```
 
-### A Word on Performance
+### Performance
 
-There are too many variables to definitively declare one implementation method is always faster than another in all environments. However, in benchmarking various CRC implementations, I have found, in general, the performance rank of various CRC implementation methods, from fastest to slowest is as follows:
+cerlc is slower than Erlang's built in crc32() function and CRC's implemented using 'C' language NIF's.
 
-1. Erlang Built In Function (BIF) (Only CRC-32 algorithm available)
-2. Erlang/Elixir with Natively Implemented Functions in 'C' (NIF's)
-3. Native Erlang/Elixir with Native Compilation enabled (Also known as: HiPE)
-    1. In some cases, HiPE is faster than a NIF implementation
-4. Native Erlang/Elixir compiled with OTP-24, which introduced the Just In Time compiler (JIT)
-    1. HiPE is not available in OTP-24 and later
-5. Native Erlang/Elixir without HiPE or JIT compilation
+cerlc is useful for quickly generating CRC's with little code and no other dependencies.
 
-#### Benchmarking Various CRC implementations
-
-For comparison purposes only.  Your environment may produce different results.
-
-[Crc Benchmark Source](https://github.com/mdsebald/CrcBenchmarks)
-
-##### Benchmark CRC routines:
-  1. Erlang BIF crc32()
-  2. [Erlang implementation for CRC32-C using NIF's](https://hex.pm/packages/crc32cer)
-  3. [Elixir configurable CRC-32 implemented using NIF's](https://hex.pm/packages/crc)
-  4. Native Erlang CRC-32 (cerlc library)
-  5. Native Erlang CRC-32/C (cerlc library)
-
-##### PC Benchmark Environment:
-
-OS: WSL2, Ubuntu 18.04, on 64 bit Windows 10 Processor: Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz, 2501 Mhz, 2 Core(s), 4 Logical Processor(s) 8 GB Ram
-
-###### Benchmark run 3 times, using a 100 bytes of random data each time
-  1. OTP-23 with HiPE enabled
-  2. OTP-24 uses JIT compiler
-  3. OTP-23 without HiPE enabled
-
-###### OTP-23 with HiPE
-```
-iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
-*** &:erlang.crc32/1 ***
-1.2 sec     8M iterations   0.16 μs/op
-
-*** &:crc32cer.nif/1 ***
-1.2 sec     8M iterations   0.16 μs/op
-
-*** &CRC.crc_32/1 ***
-1.5 sec     1M iterations   1.51 μs/op
-
-*** &:crc32.crc/1 ***
-1.9 sec     2M iterations   0.93 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.0 sec     1M iterations   1.0 μs/op
-```
-
-###### OTP-24 with JIT compilation
-```
-iex(6)> CrcBenchmarks.run_benchmark_crc32(100)
-*** &:erlang.crc32/1 ***
-1.3 sec     8M iterations   0.16 μs/op
-
-*** &:crc32cer.nif/1 ***
-1.3 sec     8M iterations   0.17 μs/op
-
-*** &CRC.crc_32/1 ***
-1.5 sec     1M iterations   1.47 μs/op
-
-*** &:crc32.crc/1 ***
-1.8 sec     1M iterations   1.77 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.8 sec     1M iterations   1.76 μs/op
-```
-
-###### OTP-23 without HiPE
-```
-iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
-*** &:erlang.crc32/1 ***
-1.3 sec     8M iterations   0.16 μs/op
-
-*** &:crc32cer.nif/1 ***
-1.2 sec     8M iterations   0.15 μs/op
-
-*** &CRC.crc_32/1 ***
-1.3 sec     1M iterations   1.28 μs/op
-
-*** &:crc32.crc/1 ***
-1.0 sec   262K iterations   4.12 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.0 sec   262K iterations   3.92 μs/op
-```
-
-As expected, the BIF and NIF implementations' performance remain constant in all of the runs, as they are not affected by HiPE or JIT.
-
-##### [Nerves](https://www.nerves-project.org/) RPI 2 Benchmark Environment:
-
-For another perspective on performance, I added the CRC benchmark code to a base Nerves firmware project and ran it on a Raspberry Pi 2 (900MHz quad-core ARM Cortex-A7 CPU 1GB RAM).  There is only one performance run, as the "native" (HiPE) compilation flag does not appear to have any effect, and the JIT for OTP-24 is currently only works for x86 processors.  Also, the crc32cer Erlang with NIF implementation was not included because it would not compile.
-
-###### OTP-23 without HiPE
-```
-iex(2)> CrcBenchmarks.run_benchmark_crc32(100)
-*** &:erlang.crc32/1 ***
-1.4 sec     1M iterations   1.36 μs/op
-
-*** &CRC.crc_32/1 ***
-1.4 sec   131K iterations   10.97 μs/op
-
-*** &:crc32.crc/1 ***
-1.4 sec     8K iterations   178.72 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.4 sec     8K iterations   177.97 μs/op
-```
-
-##### 8, 16, & 32 bit Native Erlang CRCs (OTP-23 without HiPE)
-
-Finally I compared the relative performance of various bit width native Erlang CRC implementations on the PC and RPI2.
-
-###### On the PC
-```
-iex(2)> CrcBenchmarks.run_benchmark_erlang(100)
-*** &:crc8.crc/1 ***
-1.1 sec     1M iterations   1.14 μs/op
-
-*** &:crc16_aug_ccitt.crc/1 ***
-1.9 sec     1M iterations   1.87 μs/op
-
-*** &:crc16_modbus.crc/1 ***
-1.9 sec     1M iterations   1.83 μs/op
-
-*** &:crc32.crc/1 ***
-1.8 sec     1M iterations   1.81 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.9 sec     1M iterations   1.83 μs/op
-```
-
-###### On RPI 2 with Nerves
-```
-iex(3)> CrcBenchmarks.run_benchmark_erlang(100)
-*** &:crc8.crc/1 ***
-1.4 sec    65K iterations   21.66 μs/op
-
-*** &:crc16_aug_ccitt.crc/1 ***
-1.3 sec    32K iterations   41.22 μs/op
-
-*** &:crc16_modbus.crc/1 ***
-1.2 sec    32K iterations   39.05 μs/op
-
-*** &:crc32.crc/1 ***
-1.4 sec     8K iterations   177.54 μs/op
-
-*** &:crc32_c.crc/1 ***
-1.4 sec     8K iterations   177.34 μs/op
-```
-
-The PC execution time is pretty much constant over the various CRC bit widths, while the RPI2 appears to exhibit a 32bit 4X 16bit 2X 8bit relationship.
-
-### Sources of Truth
+### Sources of CRC Definitions
 [Javascript CRC Calculator](http://www.sunshine2k.de/coding/javascript/crc/crc_js.html)
 
 [crccalc](https://crccalc.com/)
-
-### See any bugs? Don't see the CRC algorithm you need?
-    Open an issue and I'll fix it or add it.
-
-### Thanks!
