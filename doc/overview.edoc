@@ -12,7 +12,7 @@ Generate a custom CRC algorithm by manually specifying the parameters:
 
 <h5>Use:</h5>
 
-<h6>In an Erlang application:</h6>
+<h5>In an Erlang application:</h5>
 ```
   % Add to list of dependencies in rebar.config
   {deps, [
@@ -40,7 +40,7 @@ Generate a custom CRC algorithm by manually specifying the parameters:
   Crc = cerlc:calc_crc(Data, ?CRC_DEFN),
 '''
 
-<h6>In an Elixir application:</h6>
+<h5>In an Elixir application:</h5>
 ```
   # Add to list of dependencies in mix.exs
   def deps do
