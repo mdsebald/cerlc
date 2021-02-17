@@ -1,0 +1,193 @@
+@doc
+
+<h3>A Native Erlang, Custom Configurable, Cyclic Redundancy Check (CRC), Function Generator</h3>
+
+Select from over 50 predefined CRC algorithms.
+
+<h5>OR</h5>
+
+Generate a custom CRC algorithm by manually specifying the parameters:
+
+<small>bit width, polynomial, initial value, final XOR value, and data reflected or not</small>
+
+<h5>Use:</h5>
+
+<h6>In an Erlang application:</h6>
+```
+  % Add to list of dependencies in rebar.config
+  {deps, [
+    {cerlc, "0.2.0"}
+  ]}.
+
+
+  % Example: Using a predefined CRC algorithm
+  CrcDefn = cerlc:init(crc16_aug_ccitt),
+
+  % Data may be a binary or list of bytes
+  Crc = cerlc:calc_crc(Data, CrcDefn)
+
+
+  % Example: Creating a custom CRC algorithm
+  % Custom CRC parameters: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
+  CustomDefn = cerlc:init({8, 16#4F, 0, 16#FF, false}),
+
+  Crc = cerlc:calc_crc(Data, CustomDefn)
+
+
+  % Example: Using a macro to evaluate init() at compile time
+  -define(CRC_DEFN, cerlc:init(crc16_aug_ccitt)).
+
+  Crc = cerlc:calc_crc(Data, ?CRC_DEFN),
+'''
+
+<h6>In an Elixir application:</h6>
+```
+  # Add to list of dependencies in mix.exs
+  def deps do
+    [
+      {:cerlc, "~> 0.2.0"}
+    ]
+  end
+
+
+  # Example: Using a predefined CRC algorithm
+  crc8_defn = :cerlc.init(:crc8)
+
+  # Data may be a binary or list of bytes  
+  crc = :cerlc.calc_crc(data, crc8_defn)
+
+
+  # Example: Creating a custom CRC algorithm
+  # Custom CRC parameters: {bits, polynomial, init_value, final_xor_value, reflected}
+  custom_defn = cerlc:init({16, 0x1234, 0xFFFF, 0xFFFF, true}),
+
+  crc = :cerlc.calc_crc(data, custom_defn)
+
+
+  # Example: Using a module attribute to evaluate init() at compile time
+  @@crc32_defn :cerlc.init(:crc32_c)
+
+  crc = :cerlc.calc_crc(data, @crc32_defn)
+'''
+
+<h5>Predefined CRC Algorithms</h5>
+
+<table>
+  <tr>
+    <td><small><b>8 Bits</b></small></td>
+    <td><small><b>16 Bits</b></small></td>
+    <td><small><b>32 Bits</b></small></td>
+    <td><small><b>64 Bits</b></small></td>
+  </tr>
+  <tr>
+    <td>`crc8'</td>
+    <td>`crc16_ccitt_zero'</td>
+    <td>`crc32'</td>
+    <td>`crc64_ecma_182'</td>
+  </tr>
+    <tr>
+    <td>`crc8_sae_j1850'</td>
+    <td>`crc16_arc'</td>
+    <td>`crc32_bzip'</td>
+    <td>`crc64_go_iso'</td>
+  </tr>
+  <tr>
+    <td>`crc8_sae_j1850_zero'</td>
+    <td>`crc16_aug_ccitt'</td>
+    <td>`crc32_c'</td>
+    <td>`crc64_we'</td>
+  </tr>
+  <tr>
+    <td>`crc8_8h2f'</td>
+    <td>`crc16_buypass'</td>
+    <td>`crc32_d'</td>
+    <td>`crc64_xz'</td>
+  </tr>
+  <tr>
+    <td>`crc8_cdma2000'</td>
+    <td>`crc16_ccitt_false'</td>
+    <td>`crc32_mpeg'</td>
+  </tr>
+  <tr>
+    <td>`crc8_darc'</td>
+    <td>`crc16_cdma2000'</td>
+    <td>`crc32_posix'</td>
+  </tr>
+  <tr>
+    <td>`crc8_dvb_s2'</td>
+    <td>`crc16_dds_110'</td>
+    <td>`crc32_q'</td>
+  </tr>
+  <tr>
+    <td>`crc8_ebu'</td>
+    <td>`crc16_dect_r'</td>
+    <td>`crc32_jamcrc'</td>
+  </tr>
+  <tr>
+    <td>`crc8_icode'</td>
+    <td>`crc16_dect_x'</td>
+    <td>`crc32_xfer'</td>
+  </tr>
+  <tr>
+    <td>`crc8_itu'</td>
+    <td>`crc16_dnp'</td>
+  </tr>
+  <tr>
+    <td>`crc8_maxim'</td>
+    <td>`crc16_en_13757'</td>
+  </tr>
+  <tr>
+    <td>`crc8_sensirion'</td>
+    <td>`crc16_genibus'</td>
+  </tr>
+  <tr>
+    <td>`crc8_rohc'</td>
+    <td>`crc16_maxim'</td>
+  </tr>
+  <tr>
+    <td>`crc8_wcdma'</td>
+    <td>`crc16_mcrf4xx'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_riello'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_t10_dif'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_teledisk'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_tms37157'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_usb'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_a'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_kermit'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_modbus'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_x_25'</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>`crc16_xmodem'</td>
+  </tr>
+</table>
+
+@version 0.2.1

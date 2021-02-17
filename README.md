@@ -42,7 +42,7 @@ Crc = cerlc:calc_crc(Data, CrcDefn)
 
 % Example: Creating a custom CRC algorithm
 % Custom CRC parameters: {Bits, Polynomial, InitValue, FinalXorValue, Reflected}
-CustomDefn = cerlc:init({8, 16#1234, 0, 16#FF, false}),
+CustomDefn = cerlc:init({8, 16#4F, 0, 16#FF, false}),
 
 Crc = cerlc:calc_crc(Data, CustomDefn)
 
@@ -75,7 +75,7 @@ crc = :cerlc.calc_crc(data, crc8_defn)
 
 # Example: Creating a custom CRC algorithm
 # Custom CRC parameters: {bits, polynomial, init_value, final_xor_value, reflected}
-custom_defn = cerlc:init({8, 0x1234, 0, 0xFF, false}),
+custom_defn = cerlc:init({16, 0x1234, 0xFFFF, 0xFFFF, true}),
 
 crc = :cerlc.calc_crc(data, custom_defn)
 
