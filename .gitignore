@@ -1,5 +1,3 @@
-.html
-.css
 .rebar3
 _*
 .eunit
@@ -19,3 +17,8 @@ _build
 *.iml
 rebar3.crashdump
 *~
+rebar.lock
+*.html
+stylesheet.css
+edoc-info
+erlang.png
