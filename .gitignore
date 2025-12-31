@@ -20,5 +20,5 @@ rebar3.crashdump
 rebar.lock
 *.html
 stylesheet.css
-edoc-info
 erlang.png
+/doc
