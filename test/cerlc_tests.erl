@@ -65,6 +65,46 @@ crc32_r_custom_config_test() -> crc_test_common({32, 16#12345678, 16#9ABCDEF0, 1
 crc64_custom_config_test() -> crc_test_common({64, 16#123456789ABCDEF0, 16#123456789ABCDEF0, 16#123456789ABCDEF0, false}, 16#980704F6123B6210).
 crc64_r_custom_config_test() -> crc_test_common({64, 16#123456789ABCDEF0, 16#123456789ABCDEF0, 16#123456789ABCDEF0, true}, 16#1B851603B23D082C).
 
+crc24_custom_config_test() ->
+  crc_test_common({24, 16#864CFB, 16#B704CE, 0, false}, 16#21CF02).
+
+crc82_custom_config_test() ->
+  crc_test_common({82, 16#0308C0111011401440411, 0, 0, true}, 16#09EA83F625023801FD612).
+
+config_bounds_test() ->
+  lists:foreach(
+    fun({Bits, Reflected}) ->
+      Mask = (1 bsl Bits) - 1,
+      crc_test_common({Bits, 0, 0, 0, Reflected}, 0),
+      crc_test_common({Bits, Mask, Mask, Mask, Reflected}, 0, [])
+    end,
+    [{Bits, Reflected} || Bits <- [8, 128], Reflected <- [false, true]]).
+
+invalid_config_width_test() ->
+  lists:foreach(
+    fun({Bits, Reflected}) ->
+      ?assertError(badarg, cerlc:init({Bits, 1, 0, 0, Reflected}))
+    end,
+    [{Bits, Reflected}
+      || Bits <- [-1, 0, 1, 7, 129, 1 bsl 128, 8.0, undefined],
+         Reflected <- [false, true]]).
+
+invalid_config_parameters_test() ->
+  lists:foreach(
+    fun({Bits, Reflected, Index, Value}) ->
+      Config = setelement(Index, {Bits, 1, 0, 0, Reflected}, Value),
+      ?assertError(badarg, cerlc:init(Config))
+    end,
+    [{Bits, Reflected, Index, Value}
+      || Bits <- [8, 128], Reflected <- [false, true], Index <- [2, 3, 4],
+         Value <- [-1, 1 bsl Bits, 1 bsl 1024, 1.0, undefined]]).
+
+invalid_config_shape_test() ->
+  lists:foreach(
+    fun(Config) -> ?assertError(badarg, cerlc:init(Config)) end,
+    [42, {}, {8, 1, 0, 0}, {8, 1, 0, 0, false, extra},
+     {8, 1, 0, 0, 0}, {8, 1, 0, 0, undefined}]).
+
 % Test passing binary data into CRC calculation
 crc8_sensirion_bin_test() -> crc_test_common(crc8_sensirion, 16#92, <<16#BE, 16#EF>>).
 
