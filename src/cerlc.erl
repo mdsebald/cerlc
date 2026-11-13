@@ -28,8 +28,19 @@
 init(CrcDef) when is_atom(CrcDef) ->
   init(name_to_config(CrcDef));
 
+init({Bits, Polynomial, InitValue, FinalXorValue, Reflected} = CrcDef)
+    when is_integer(Bits), Bits >= 8, Bits =< 128,
+         is_integer(Polynomial), Polynomial >= 0, Polynomial < (1 bsl Bits),
+         is_integer(InitValue), InitValue >= 0, InitValue < (1 bsl Bits),
+         is_integer(FinalXorValue), FinalXorValue >= 0, FinalXorValue < (1 bsl Bits),
+         is_boolean(Reflected) ->
+  init_config(CrcDef);
+
+init(_) ->
+  erlang:error(badarg).
+
 % Generate 8-bit CRC function for un-reflected case
-init({8, Polynomial, InitValue, FinalXorValue, false}) ->
+init_config({8, Polynomial, InitValue, FinalXorValue, false}) ->
 
   #cerlc{
     init_value = InitValue,
@@ -42,7 +53,7 @@ init({8, Polynomial, InitValue, FinalXorValue, false}) ->
   };
 
 % Generate 8-bit CRC function for reflected case
-init({8, Polynomial, InitValue, FinalXorValue, true}) ->
+init_config({8, Polynomial, InitValue, FinalXorValue, true}) ->
 
   #cerlc{
     init_value = reflect(8, InitValue),
@@ -54,8 +65,8 @@ init({8, Polynomial, InitValue, FinalXorValue, true}) ->
     mask = 0
   };
 
-% Generate 16, 32, or 64-bit CRC function for un-reflected case
-init({Bits, Polynomial, InitValue, FinalXorValue, false}) ->
+% Generate wider CRC function for un-reflected case
+init_config({Bits, Polynomial, InitValue, FinalXorValue, false}) ->
 
   #cerlc{
     init_value = InitValue,
@@ -66,8 +77,8 @@ init({Bits, Polynomial, InitValue, FinalXorValue, false}) ->
     mask = bits_to_mask(Bits)
   };
 
-% Generate 16, 32, or 64-bit CRC functions for reflected case
-init({Bits, Polynomial, InitValue, FinalXorValue, true}) ->
+% Generate wider CRC function for reflected case
+init_config({Bits, Polynomial, InitValue, FinalXorValue, true}) ->
 
   #cerlc{
     init_value = reflect(Bits, InitValue),
