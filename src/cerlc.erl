@@ -3,10 +3,6 @@
 %
 -module(cerlc).
 
-% Invoke HiPE compilation when possible
-% This will have no effect with JIT enabled (i.e. OTP-24 and later)
--compile(native).
-
 -export([init/1, calc_crc/2, crc8_fun/3, crc16_32_64_fun/3, crc16_32_64_r_fun/3]).
 
 -record(cerlc, {
