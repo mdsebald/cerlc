@@ -21,3 +21,9 @@ jobs:
       run: rebar3 compile
     - name: Run tests
       run: rebar3 eunit
+    - name: Build documentation
+      run: rebar3 ex_doc --output _build/docs
+    - name: Build Hex package
+      run: rebar3 hex build package
+    - name: Run Dialyzer
+      run: rebar3 dialyzer
