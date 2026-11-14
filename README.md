@@ -1,3 +1,8 @@
+<!--
+  SPDX-FileCopyrightText: 2020 Mark Sebald
+  SPDX-FileCopyrightText: 2025 Frank Hunleth
+  SPDX-License-Identifier: CC-BY-4.0
+-->
 # cerlc
 
 ## A Custom Configurable Cyclic Redundancy Check (CRC), Function Generator
