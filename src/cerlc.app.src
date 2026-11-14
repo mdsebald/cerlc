@@ -1,3 +1,7 @@
+%% SPDX-FileCopyrightText: 2021 Mark Sebald
+%%
+%% SPDX-License-Identifier: Apache-2.0
+%%
 {application,cerlc,
   [{description,"A Native Erlang Configurable CRC function generator"},
   {vsn,"0.2.1"},

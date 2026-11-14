@@ -1,3 +1,7 @@
+<!--
+  SPDX-FileCopyrightText: None
+  SPDX-License-Identifier: CC0-1.0
+-->
 # Changelog
 
 ## v0.2.1
@@ -14,4 +18,4 @@
 
 * Initial release to Hex.pm
 
- 
+

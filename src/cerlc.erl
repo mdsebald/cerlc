@@ -1,3 +1,8 @@
+%% SPDX-FileCopyrightText: 2021 Mark Sebald
+%% SPDX-FileCopyrightText: 2026 Frank Hunleth
+%%
+%% SPDX-License-Identifier: Apache-2.0
+%%
 %
 % @doc A configurable cyclic redundancy check (CRC) generator
 %
