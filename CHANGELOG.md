@@ -4,6 +4,14 @@
 -->
 # Changelog
 
+## v0.2.2
+
+* Switch to ex_doc for generating documentation
+* Validate CRC parameters at initialization
+* Remove old HiPE directive
+* Add SPDX headers and NOTICE
+* Remove Erlang macro example in doc, that didn't work
+
 ## v0.2.1
 
 * Add EDoc documentation generation
