@@ -4,7 +4,7 @@
 %%
 {application,cerlc,
   [{description,"A Native Erlang Configurable CRC function generator"},
-  {vsn,"0.2.1"},
+  {vsn,"0.2.2"},
   {registered,[]},
   {applications,[kernel,stdlib]},
   {env,[]},
