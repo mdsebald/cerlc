@@ -41,11 +41,6 @@ Crc = cerlc:calc_crc(Data, CrcDefn)
 CustomDefn = cerlc:init({8, 16#4F, 0, 16#FF, false}),
 
 Crc = cerlc:calc_crc(Data, CustomDefn)
-
-% Example: Using a macro to evaluate init() function at compile time
--define(CRC_DEFN, cerlc:init(crc16_aug_ccitt)).
-
-Crc = cerlc:calc_crc(Data, ?CRC_DEFN),
 ```
 
 #### In an Elixir application
